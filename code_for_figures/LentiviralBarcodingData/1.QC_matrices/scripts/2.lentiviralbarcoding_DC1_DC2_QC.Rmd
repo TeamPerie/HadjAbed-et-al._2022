@@ -1,0 +1,55 @@
+---
+title: "QC of lentiviral barcoding data - cDC1 versus cDC2 dendritic cells subtypes"
+author: "Louisa Hadj Abed"
+date: "4/06/202"
+output: html_document
+---
+
+```{r setup, include=TRUE, warning=FALSE, message=FALSE}
+library(ggplot2)
+library(devtools)
+#load packages
+devtools::install_github("Louisahadj/CellDestiny", quiet = TRUE)
+library(CellDestiny)
+```
+
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+# set working directory
+setwd(getwd())
+# import files
+count_matrix <- read.csv("../DC1_DC2_QC_norm_ab_cor_filt.csv.gz")
+metadata <- read.csv("../DC1_DC2_QC_norm_ab_cor_filt_metadata.csv.gz")
+
+# Common parameters
+dup_var="duplicates"
+dup_val=metadata$duplicates
+
+list_var = c("type")
+list_val = metadata$type
+```
+
+## Reformat matrix for QC
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+qc_mat<-ReformatQCmatrix(count_matrix, metadata, dup_var, dup_val, sampleNameFieldsep = "_")
+```
+
+
+## Duplicates checking 
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+dup_mat<-MakeDuplicatesMatrix(qc_mat, list_var, list_val, metadata)
+PlotDuplicates(dup_mat, dup_val, transformation = "arcsin")
+```
+
+## Repeat Use checking 
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+#parameters
+indiv_var="mouse"
+indiv_val=c("2", "4", "5")
+
+ru_mat<-MakeRepeatUseMatrix(qc_mat, indiv_var, indiv_val)
+PlotRepeatUse(ru_mat, indiv_var,textSize = 12)
+```

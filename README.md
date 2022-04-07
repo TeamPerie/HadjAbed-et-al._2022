@@ -2,7 +2,7 @@
 --------------
 
 <p align="center" width="100%">
-    <img width="40%" src="https://github.com/TeamPerie/HadjAbed-et-al._2022/blob/main/logoCelldestiny.jpg">
+    <img width="40%" src="https://github.com/TeamPerie/HadjAbed-et-al._2022/blob/main/logos/logoCelldestiny.jpg">
 </p>
 
 This is the code used to analyse the lineage tracing datasets in the paper:

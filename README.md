@@ -27,7 +27,7 @@ scales, tidyr, RColorBrewer, rlang, corrplot, stats, devtools
 **LentiviralBarcodingData:** this folder contains all of the raw data and scripts necessary to reproduce figures from panels 2-5. The folder is subdivided into a QC visualisation script and a data analysis script, within which there are scripts to create metadata for the experiment and to perform analysis and visualisation of the data
 
 
-**Gene Therapy:** this folder contains all of the raw data and scripts necessary to reproduce figures from panels 6-8. The folder contains a data analysis script, within which there are scripts to create metadata for the experiment and to perform analysis and visualisation of the data
+**GeneTherapy:** this folder contains all of the raw data and scripts necessary to reproduce figures from panels 6-8. The folder contains a data analysis script, within which there are scripts to create metadata for the experiment and to perform analysis and visualisation of the data
 
 
 

@@ -1,6 +1,10 @@
 # CellDestiny (HadjAbed-et-al. 2022)
 --------------
 
+<p align="center" width="100%">
+    <img width="40%" src="https://github.com/TeamPerie/HadjAbed-et-al._2022/edit/main/logoCelldestiny.jpg">
+</p>
+
 This is the code used to analyse the lineage tracing datasets in the paper:
 
 

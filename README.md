@@ -1,5 +1,5 @@
 <p align="right" width="100%">
-    <img width="10%" src="https://github.com/TeamPerie/HadjAbed-et-al._2022/edit/main/logos/logoCurie.png">
+    <img width="10%" src="https://github.com/TeamPerie/HadjAbed-et-al._2022/blob/main/logos/logoCurie.png">
 </p>
 
 

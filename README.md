@@ -22,9 +22,7 @@ The Github of the app can be found here: https://github.com/TeamPerie/CellDestin
 
 ### Installing the package via Rstudio
 
-    ***
         devtools::install_github("TeamPerie/CellDestiny", quiet = TRUE)
-    ***
 
 
 ### Dependencies

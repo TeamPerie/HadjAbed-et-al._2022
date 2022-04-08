@@ -15,7 +15,7 @@ This is the code used to analyse the lineage tracing datasets in the paper:
 
 CellDestiny: A RShiny application for the visualization and analysis of single-cell lineage tracing data (L. Hadj-Abed et al. 2022). Full details of the approach are given in the methods section of the paper.
 
-## CellDestiny Github
+### CellDestiny app Github
 
 The Github of the app can be found here: https://github.com/TeamPerie/CellDestiny.
 

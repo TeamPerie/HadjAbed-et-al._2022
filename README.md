@@ -15,13 +15,14 @@ This is the code used to analyse the lineage tracing datasets in the paper:
 
 CellDestiny: A RShiny application for the visualization and analysis of single-cell lineage tracing data (L. Hadj-Abed et al. 2022). Full details of the approach are given in the methods section of the paper.
 
+## CellDestiny Github
+
+The Github of the app can be found here: https://github.com/TeamPerie/CellDestiny.
+
 
 ### Installing the package
 
-
-devtools::install_github("Louisahadj/CellDestiny", quiet = TRUE)
-note: We need to move CellDestiny from Louisa repository to perie repository
-
+devtools::install_github("TeamPerie/CellDestiny", quiet = TRUE)
 
 
 ### Dependencies
@@ -37,8 +38,6 @@ scales, tidyr, RColorBrewer, rlang, corrplot, stats, devtools
 
 
 **GeneTherapy:** this folder contains all of the raw data and scripts necessary to reproduce figures from panels 6-8. The folder contains a data analysis script, within which there are scripts to create metadata for the experiment and to perform analysis and visualisation of the data
-
-
 
 
 ### LICENSE

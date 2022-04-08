@@ -366,13 +366,15 @@ library(CellDestiny)</code></pre>
 ##   plot.ggplot      ggplot2
 ##   print.ggplot     ggplot2</code></pre>
 <pre class="r"><code>setwd(getwd())</code></pre>
-<pre class="r"><code># parameters
-file_path&lt;-&quot;../DC1_DC2_QC_norm_ab_cor_filt.csv.gz&quot;
+<div id="fill-parameters" class="section level2">
+<h2>Fill parameters</h2>
+<pre class="r"><code>file_path&lt;-&quot;../DC1_DC2_QC_norm_ab_cor_filt.csv.gz&quot;
 field_separator=&quot;,&quot;   # if csv==,   if csv2==;   if tsv==\t
 file_extention&lt;-&quot;.csv.gz&quot;
 sampleName_separators=&quot;_&quot;</code></pre>
-<div id="create-metadata-of-the-given-count-matrix-without-column-names" class="section level1">
-<h1>create metadata of the given count matrix WITHOUT column names</h1>
+</div>
+<div id="create-metadata-of-the-given-count-matrix-without-column-names" class="section level2">
+<h2>Create metadata of the given count matrix WITHOUT column names</h2>
 <pre class="r"><code>matrix&lt;-read.csv(file_path, sep = field_separator)
 # demander sample name separators
 met&lt;-MakeMetadata(matrix, sampleName_separators)
@@ -382,8 +384,8 @@ met</code></pre>
 ## 2 duplicat2 cDC2  4
 ## 3      &lt;NA&gt; &lt;NA&gt;  5</code></pre>
 </div>
-<div id="name-columns-after-seeing-the-table" class="section level1">
-<h1>name columns after seeing the table</h1>
+<div id="name-columns-after-seeing-the-table" class="section level2">
+<h2>Name columns after seeing the table</h2>
 <pre class="r"><code># if not duplicats == analysis in the app
 colnames(met)&lt;-c(&quot;duplicates&quot;,&quot;type&quot;, &quot;mouse&quot;)
 met</code></pre>
@@ -392,8 +394,8 @@ met</code></pre>
 ## 2  duplicat2 cDC2     4
 ## 3       &lt;NA&gt; &lt;NA&gt;     5</code></pre>
 </div>
-<div id="save-the-metadata" class="section level1">
-<h1>save the metadata</h1>
+<div id="save-the-metadata" class="section level2">
+<h2>Save the metadata</h2>
 <pre class="r"><code>file_noExtention&lt;-gsub(pattern = file_extention, replacement = &quot;&quot;, file_path) # change &quot;.csv&quot; if not .csv file
 write.csv(met, paste0(file_noExtention, &quot;_metadata.csv.gz&quot;), row.names = FALSE, na = &quot;&quot;, quote = FALSE)</code></pre>
 </div>

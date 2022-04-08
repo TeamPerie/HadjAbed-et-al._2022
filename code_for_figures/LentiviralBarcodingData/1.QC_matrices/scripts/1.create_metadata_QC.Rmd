@@ -14,15 +14,16 @@ library(CellDestiny)
 setwd(getwd())
 ```
 
+## Fill parameters
+
 ```{r , echo=TRUE, warning=FALSE}
-# parameters
 file_path<-"../DC1_DC2_QC_norm_ab_cor_filt.csv.gz"
 field_separator=","   # if csv==,   if csv2==;   if tsv==\t
 file_extention<-".csv.gz"
 sampleName_separators="_"
 ```
 
-# create metadata of the given count matrix WITHOUT column names 
+## Create metadata of the given count matrix WITHOUT column names 
 
 ```{r , echo=TRUE, warning=FALSE}
 matrix<-read.csv(file_path, sep = field_separator)
@@ -31,7 +32,7 @@ met<-MakeMetadata(matrix, sampleName_separators)
 met
 ```
 
-# name columns after seeing the table
+## Name columns after seeing the table
 
 ```{r , echo=TRUE, warning=FALSE}
 # if not duplicats == analysis in the app
@@ -39,7 +40,7 @@ colnames(met)<-c("duplicates","type", "mouse")
 met
 ```
 
-# save the metadata
+## Save the metadata
 ```{r , echo=TRUE, warning=FALSE}
 file_noExtention<-gsub(pattern = file_extention, replacement = "", file_path) # change ".csv" if not .csv file
 write.csv(met, paste0(file_noExtention, "_metadata.csv.gz"), row.names = FALSE, na = "", quote = FALSE)

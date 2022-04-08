@@ -5,8 +5,11 @@ date: "6/23/2021"
 output: html_document
 ---
 
-Wiskott-Aldrich Syndrome (WAS) is a monogenic X-linked primary immunodeficiency characterised by thrombocytopenia, eczema, bleeding episode and immunodeficiency (Bosticardo et al. 2014). The disorder is caused by mutations in the WAS gene, which codes for WASP, a protein that regulates the cell cytoskeleton. A 2013 study by Aiuti et. al assessed the dynamics and efficacy of gene-therapy treatment in 3 WAS patients through longitudinal lentiviral integration site analysis (Aiuti et al. 2013). In this setting autologous CD34+ hematopoietic stem and progenitor cells (HSPCs) harvested from patient bone marrows were transduced with a functional WAS gene ex-vivo before being reinfused intravenously into patients. In transduced HSPCs, lentiviruses randomly integrate into the genome. The genomic coordinates of the lentiviral integrations are unique to each transduced cell and are inherited by the cell’s progeny. The integration sites thus act as barcodes that can be used to assess clonal dynamics of transduced HSPCs in these patients. Here we use CellDestiny to explore clonal diversity, clone size distributions and lineage commitment of transduced HSPCs in WAS patients. We started our analysis with the filtered matrix kindly provided by the authors of the paper (Aiuti et al. 2013) and show how some of the authors conclusions (Aiuti et al. 2013) can be independently verified using CellDestiny. 
+<br/>
+ 
+##### Wiskott-Aldrich Syndrome (WAS) is a monogenic X-linked primary immunodeficiency characterised by thrombocytopenia, eczema, bleeding episode and immunodeficiency (Bosticardo et al. 2014). The disorder is caused by mutations in the WAS gene, which codes for WASP, a protein that regulates the cell cytoskeleton. A 2013 study by Aiuti et. al assessed the dynamics and efficacy of gene-therapy treatment in 3 WAS patients through longitudinal lentiviral integration site analysis (Aiuti et al. 2013). In this setting autologous CD34+ hematopoietic stem and progenitor cells (HSPCs) harvested from patient bone marrows were transduced with a functional WAS gene ex-vivo before being reinfused intravenously into patients. In transduced HSPCs, lentiviruses randomly integrate into the genome. The genomic coordinates of the lentiviral integrations are unique to each transduced cell and are inherited by the cell’s progeny. The integration sites thus act as barcodes that can be used to assess clonal dynamics of transduced HSPCs in these patients. Here we use CellDestiny to explore clonal diversity, clone size distributions and lineage commitment of transduced HSPCs in WAS patients. We started our analysis with the filtered matrix kindly provided by the authors of the paper (Aiuti et al. 2013) and show how some of the authors conclusions (Aiuti et al. 2013) can be independently verified using CellDestiny. 
 
+<br/>
 
 ```{r setup, include=FALSE, warning=FALSE, message=FALSE}
 #load packages
@@ -18,9 +21,9 @@ setwd(getwd())
 indiv_var="patient"
 ```
 
-# 1 to 12 months after GT
+## 1 to 12 months after GT
 
-To understand clonal dynamics shortly after transplantation in patients undergoing gene therapy, we first assess clonal diversity at 1 month, 3 month, and 12 months post-transplantation in bone-marrow CD34+ HSPCs and peripheral-blood leukocytes. Unsupervised clustering and heatmap visualization showed relatively few barcodes were observed across more than one timepoint . This observation could be due to different HSPCs reconstituting the hematopoietic system over time or could be a sampling artefact given that only a small percentage of the total blood volume was sampled at a given timepoint, preventing the analysis of barcode fate over time. 
+##### To understand clonal dynamics shortly after transplantation in patients undergoing gene therapy, we first assess clonal diversity at 1 month, 3 month, and 12 months post-transplantation in bone-marrow CD34+ HSPCs and peripheral-blood leukocytes. Unsupervised clustering and heatmap visualization showed relatively few barcodes were observed across more than one timepoint . This observation could be due to different HSPCs reconstituting the hematopoietic system over time or could be a sampling artefact given that only a small percentage of the total blood volume was sampled at a given timepoint, preventing the analysis of barcode fate over time. 
 
 
 ```{r, echo=TRUE, warning=FALSE}
@@ -29,9 +32,11 @@ count_matrix <- read.csv("../patient1_2_3_month1_3_12.csv.gz", sep = ",")
 metadata <- read.csv("../patient1_2_3_month1_3_12_metadata.csv.gz", sep = ",", colClasses='character', check.names=FALSE)
 ```
 
-## Heatmaps
+### Heatmaps
 
-### patient1 
+##### Heatmaps are used to visualize barcode compisition similarities between time points.    
+
+###### patient1 
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
 ## Plot heatmap
@@ -54,7 +59,7 @@ mat_heat<-MakeHeatmapMatrix(matrix = count_matrix, metadata = metadata, indivVar
 p<-PlotHeatmap(wideMatrix = mat_heat, distance = distance, clustering = clusteringMeth, showDendro = dendro, showBarcodes = barcodes, nClusters = nclust, columnTextSize = 2)
 ```
 
-### patient2
+###### patient2
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
 ind_val="patient2"
@@ -64,7 +69,7 @@ mat_heat<-MakeHeatmapMatrix(matrix = count_matrix, metadata = metadata, indivVar
 p<-PlotHeatmap(wideMatrix = mat_heat, distance = distance, clustering = clusteringMeth, showDendro = dendro, showBarcodes = barcodes, nClusters = nclust, columnTextSize = 2)
 ```
 
-### patient3
+###### patient3
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
 ind_val="patient3"
@@ -75,11 +80,11 @@ p<-PlotHeatmap(wideMatrix = mat_heat, distance = distance, clustering = clusteri
 ```
 
 
-## Categorisation
+### Categorisation
 
-To understand the cell production of transduced HSPCs in different hematopoietic lineages, we compared IS barcodes across peripheral-blood myeloid and lymphoid immune cells at 1,3, and 12 months post-transplantation. At 1 and 3 month post-transplantation, the majority of IS were not shared between lymphoid and myeloid cells whereas at 12 months more IS are shared between the two lineages. From 1 to 12 months post-transplantation, bi-outcome HSPC numbers increased from representing 5% at 1 month to 20% of total IS barcodes detected. Bi-outcome HSPC produced 24% and 56% of lymphoid and myeloid cells respectively at 12 months post-transplantation. Overall, the majority of blood cells were produced by uni-outcome progenitors at each time point. This shows that the first wave of hematopoiesis in WAS patients was sustained primarily by lineage committed progenitors. 
+##### To understand the cell production of transduced HSPCs in different hematopoietic lineages, we compared IS barcodes across peripheral-blood myeloid and lymphoid immune cells at 1,3, and 12 months post-transplantation. At 1 and 3 month post-transplantation, the majority of IS were not shared between lymphoid and myeloid cells whereas at 12 months more IS are shared between the two lineages. From 1 to 12 months post-transplantation, bi-outcome HSPC numbers increased from representing 5% at 1 month to 20% of total IS barcodes detected. Bi-outcome HSPC produced 24% and 56% of lymphoid and myeloid cells respectively at 12 months post-transplantation. Overall, the majority of blood cells were produced by uni-outcome progenitors at each time point. This shows that the first wave of hematopoiesis in WAS patients was sustained primarily by lineage committed progenitors. 
 
-### 1 month 
+###### 1 month 
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
 ## common parameters
@@ -104,7 +109,7 @@ count_per_cat<-MakeCategoryMatrices(count_matrix, metadata, indiv_var, indiv_val
 PlotCategoryCounts(count_per_cat, slider, condition_val)
 ```
 
-### 3 months 
+###### 3 months 
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
 condition_val<-c("03")
@@ -116,7 +121,7 @@ count_per_cat<-MakeCategoryMatrices(count_matrix, metadata, indiv_var, indiv_val
 PlotCategoryCounts(count_per_cat, slider, condition_val)
 ```
 
-### 12 months 
+###### 12 months 
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
 condition_val<-c("12")
@@ -128,9 +133,9 @@ count_per_cat<-MakeCategoryMatrices(count_matrix, metadata, indiv_var, indiv_val
 PlotCategoryCounts(count_per_cat, slider, condition_val)
 ```
 
-## Barcode sharing: lymphocytes versus myeloid cells
+### Barcode sharing: lymphocytes versus myeloid cells
 
-Here we use scatter plots to assess barcode sharing between the myeloid and lymphoid lineages
+##### Here we use scatter plots to assess barcode sharing between the myeloid and lymphoid lineages
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
 ## common parameters
@@ -175,9 +180,9 @@ PlotDotplot(dot_mat, indiv_var, color, SBtransformation, 10)
 #ggsave("images/dotplot_1month.png", dpi = 300)
 ```     
 
-## Diversity over time and acorss all patients
+### Diversity over time and acorss all patients
 
-In this section we quantify the number of clones contributing to hematopoiesis over time across all patients
+##### In this section we quantify the number of clones contributing to hematopoiesis over time across all patients
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
 indiv_val=c("patient1","patient2","patient3")
@@ -199,7 +204,7 @@ div_mat<-CalculDiversity(count_matrix, metadata, indiv_var, indiv_val, list_var,
 PlotDiversity(div_mat,diversityVar, list_var, indiv_var, colorVar=boxplotColor_var )
 ```
 
-## Clone sizes at each time points (cumulative diagram)
+### Clone sizes at each time points (cumulative diagram)
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
 indiv_val=c("patient1","patient2","patient3")
@@ -215,9 +220,9 @@ cum_mat<-MakeCumulativeDiagramMatrix(count_matrix, metadata, indiv_var, indiv_va
 PlotCumulativeDiagram(cum_mat, indiv_var, color_var, textSize=15, xProp= x_proportion)
 ```
 
-## 12 versus 24 months (patient 2 & 3 only)
+### 12 versus 24 months (patient 2 & 3 only)
 
-In this section we compare the 12 and 24 month timepoints in patients 2 and 3 (patient 1 did not have any data at this timepoint)
+##### In this section we compare the 12 and 24 month timepoints in patients 2 and 3 (patient 1 did not have any data at this timepoint)
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
 # import files 24 months 
@@ -233,9 +238,9 @@ metadata24$month<-c("12", "24", "")
 indiv_val=c("patient2","patient3")
 ```
 
-## Barcode sharing : lymphocytes vs myloid cells vs CD34plos 
+### Barcode sharing : lymphocytes vs myloid cells vs CD34plos 
 
-In this section we quantify barcode sharing between lymphocytes, myeloid cells and CD34 progenitors
+##### In this section we quantify barcode sharing between lymphocytes, myeloid cells and CD34 progenitors
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
 top_var<-c("month", "type")
@@ -245,9 +250,9 @@ right_var<-c("month", "type")
 colorTer<-"yes"
 ```
 
-### Ternary : 12months 
+#### Ternary : 12months 
 
-Visualise the data at 12 months using a ternary plot
+##### Visualise the data at 12 months using a ternary plot
 
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
@@ -259,9 +264,9 @@ ter_mat<-MakeTernaryMatrix(count_matrix12_24, metadata24, indiv_var, indiv_val, 
 PlotTernaryPlot(ter_mat, indiv_var, addColor = colorTer) + labs(title = paste0("Month 12"), subtitle = "Patient 2 & 3")
 ```
 
-### Ternary : 24 months
+#### Ternary : 24 months
 
-Visualise the data at 24 months using a ternary plot
+##### Visualise the data at 24 months using a ternary plot
 
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
@@ -273,9 +278,9 @@ ter_mat<-MakeTernaryMatrix(count_matrix12_24, metadata24, indiv_var, indiv_val, 
 PlotTernaryPlot(ter_mat, indiv_var, addColor = colorTer) + labs(title = paste0("Month 24"), subtitle = "Patient 2 & 3")
 ```
 
-## Heatmap : Pooled individuals + 12 VS 24 months
+### Heatmap : Pooled individuals + 12 VS 24 months
 
-Visualise barcode sharing using a heatmap
+##### Visualise barcode sharing using a heatmap
 
 
 ```{r, echo=TRUE, warning=FALSE}
@@ -293,9 +298,9 @@ mat_heat<-MakeHeatmapMatrix(matrix = count_matrix12_24, metadata = metadata24, i
 p<-PlotHeatmap(wideMatrix = mat_heat, distance = distance, clustering = clusteringMeth, showDendro = dendro, showBarcodes = barcodes, nClusters = nclust, columnTextSize = 2)
 ```
 
-## Piechart : 12 VS 24
+### Piechart : 12 VS 24
 
-Visualise the data using a pie chart. 
+##### Visualise the data using a pie chart. 
 
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}

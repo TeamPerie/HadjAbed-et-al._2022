@@ -5,6 +5,18 @@ date: "4/06/202"
 output: html_document
 ---
 
+<br/>
+
+##### In this case study we assess the development of lung-resident conventional dendritic cells in mice. Dendritic cells are a key component of the immune system, initiating adaptive immune responses through the presentation of antigen. DCs (CD11c+MHCII+CD24-CD64) can be further divided into a number of sub-categories including the conventional cDC1 and cDC2. cDC1, identified by their surface expression of CD8α, present antigens and prime cytotoxic CD8+ T cell responses to intracellular pathogens (Cabeza-Cabrerizo et al. 2021). cDC2, defined by their surface expression of the CD11b marker, constitute a more heterogeneous cell population that preferentially activate CD4+ helper T cell responses (Shin et al. 2020). 
+
+##### Previously, lentiviral barcoding analysis has shown that lympho-myeloid-primed progenitors (LMPPs) include progenitors only giving rise to cDCs, suggesting that commitment to the cDC lineage can occur very early in hematopoiesis (Naik et al. 2013b). In addition, some LMPPs were giving rise to only one of the cDC1, cDC2 and plasmacytoid splenic DCs subsets while very few LMPPs were producing all DC splenic subtypes. In mice, LMPPs are a subset of a broader hematopoietic stem and progenitor cell population known as multipotent progenitor 4 (MPP4)  but it is not known if results from Naik et al (2013) can be extrapolated to all MPP4s, and also if this result holds across all tissues where cDC’s reside. In this analysis, we wish to assess if a single MPP4 can produce both the cDC1 and the cDC2 subsets in the lung or whether a single MPP4 is fate-restricted to only produce cDC1 or cDC2 (Figure 2a). 
+
+##### To address this research question, we used a lentiviral barcoding approach focusing on the differentiation of (Lin-, Sca-1+, cKit+, Flt3+) MPP4s towards lung-resident cDCs (Figure 2b). Specifically, MPP4s were purified from the bone marrow of donor mice by fluorescence activated cell sorting and infected with the LG2.2 lentiviral barcoding library. Labelled cells where then injected I.V into 3 irradiated recipient mice. 14 days later, lungs were isolated from the mice, and barcoded cDC1s, and cDC2s were purified by FACS using the gating strategy shown in Fig. 2b. Samples were then processed for barcode detection in genomic DNA by deep sequencing as described in the Materials and Methods section of the CellDestiny paper.
+
+##### In this script we visualise key QC parameters of the data before proceeding to make comparisons between cDC1 and cDC2. 
+
+<br/>
+ 
 ```{r setup, include=TRUE, warning=FALSE, message=FALSE}
 library(ggplot2)
 library(devtools)
@@ -29,21 +41,25 @@ list_var = c("type")
 list_val = metadata$type
 ```
 
-## Reformat matrix for QC
+### Reformat matrix for QC
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
 qc_mat<-ReformatQCmatrix(count_matrix, metadata, dup_var, dup_val, sampleNameFieldsep = "_")
 ```
 
 
-## Duplicates checking 
+### Duplicates checking 
+
+##### Prior to drawing biological insights from a lineage tracing experiment, it is important to assess whether there are technical factors that can confound the interpretation of the data. Here we look at the consistency of technical replicates
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
 dup_mat<-MakeDuplicatesMatrix(qc_mat, list_var, list_val, metadata)
 PlotDuplicates(dup_mat, dup_val, transformation = "arcsin")
 ```
 
-## Repeat Use checking 
+### Repeat Use checking 
+
+##### Here we assess the frequency of repeat use barcodes in the data
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
 #parameters

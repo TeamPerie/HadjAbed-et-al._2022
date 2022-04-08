@@ -20,9 +20,11 @@ CellDestiny: A RShiny application for the visualization and analysis of single-c
 The Github of the app can be found here: https://github.com/TeamPerie/CellDestiny.
 
 
-### Installing the package
+### Installing the package via Rstudio
 
-devtools::install_github("TeamPerie/CellDestiny", quiet = TRUE)
+    ***
+        devtools::install_github("TeamPerie/CellDestiny", quiet = TRUE)
+    ***
 
 
 ### Dependencies

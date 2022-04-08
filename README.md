@@ -1,3 +1,8 @@
+<p align="right" width="100%">
+    <img width="10%" src="https://github.com/TeamPerie/HadjAbed-et-al._2022/edit/main/logos/logoCurie.png">
+</p>
+
+
 # CellDestiny (HadjAbed-et-al. 2022)
 --------------
 

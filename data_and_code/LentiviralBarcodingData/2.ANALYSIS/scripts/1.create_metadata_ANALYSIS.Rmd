@@ -9,39 +9,38 @@ This script creates a metadata matrix based on a given count matrix and based on
 
 
 ```{r , echo=TRUE, warning=FALSE}
-devtools::install_github("Louisahadj/CellDestiny", quiet = TRUE)
+devtools::install_github("TeamPerie/CellDestiny", quiet = TRUE)
 library(CellDestiny)
 setwd(getwd())
 ```
 
-## Fill parameters
-
-```{r , echo=TRUE, warning=FALSE}
-file_path<-"../DC1_DC2_QC_norm_ab_cor_filt.csv.gz"
+```{r ,echo=TRUE, warning=FALSE}
+# parameters
+file_path<-"../DC1_DC2_ANALYSIS_norm_ab_cor_filt.csv.gz"
 field_separator=","   # if csv==,   if csv2==;   if tsv==\t
 file_extention<-".csv.gz"
 sampleName_separators="_"
 ```
 
-## Create metadata of the given count matrix WITHOUT column names 
+# create metadata of the given count matrix WITHOUT column names 
 
-```{r , echo=TRUE, warning=FALSE}
+```{r ,echo=TRUE, warning=FALSE}
 matrix<-read.csv(file_path, sep = field_separator)
 # demander sample name separators
 met<-MakeMetadata(matrix, sampleName_separators)
 met
 ```
 
-## Name columns after seeing the table
+# name columns after seeing the table
 
-```{r , echo=TRUE, warning=FALSE}
+```{r ,echo=TRUE, warning=FALSE}
 # if not duplicats == analysis in the app
-colnames(met)<-c("duplicates","type", "mouse")
+colnames(met)<-c("type", "mouse")
 met
 ```
 
-## Save the metadata
-```{r , echo=TRUE, warning=FALSE}
+# save the metadata
+```{r ,echo=TRUE, warning=FALSE}
 file_noExtention<-gsub(pattern = file_extention, replacement = "", file_path) # change ".csv" if not .csv file
 write.csv(met, paste0(file_noExtention, "_metadata.csv.gz"), row.names = FALSE, na = "", quote = FALSE)
 ```

@@ -9,7 +9,7 @@ This script creates a metadata matrix based on a given count matrix and based on
 
 
 ```{r , echo=TRUE, warning=FALSE}
-devtools::install_github("Louisahadj/CellDestiny", quiet = TRUE)
+devtools::install_github("TeamPerie/CellDestiny", quiet = TRUE)
 library(CellDestiny)
 setwd(getwd())
 ```

@@ -30,6 +30,7 @@ indiv_var="patient"
 # import files 1 to 12 months
 count_matrix <- read.csv("../patient1_2_3_month1_3_12.csv.gz", sep = ",")
 metadata <- read.csv("../patient1_2_3_month1_3_12_metadata.csv.gz", sep = ",", colClasses='character', check.names=FALSE)
+count_matrix[,-1] <- apply(count_matrix[,-1],2, function(x) ((x/sum(x))*100000)) 
 ```
 
 ### Heatmaps

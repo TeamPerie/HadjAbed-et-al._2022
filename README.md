@@ -21,7 +21,7 @@ The Github of the app can be found here: https://github.com/TeamPerie/CellDestin
 
 #### User Manual
 
-A user manual with hands-on example can be found [here](https://github.com/TeamPerie/CellDestiny/tree/main/UserManual/). 
+A user manual with hands-on examples can be found [here](https://github.com/TeamPerie/CellDestiny/tree/main/UserManual/). 
 
 
 ### Installing the package via Rstudio

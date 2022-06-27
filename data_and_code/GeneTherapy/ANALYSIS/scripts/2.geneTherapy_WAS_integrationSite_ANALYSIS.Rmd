@@ -194,9 +194,9 @@ boxplotColor_var="month"
 
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
-diversityVar<-"Number of barcodes"
+diversityVar<-"Number of unique barcodes"
 div_mat<-CalculDiversity(count_matrix, metadata, indiv_var, indiv_val, list_var, list_val ,colorVar=boxplotColor_var, diversity=diversityVar)
-PlotDiversity(div_mat,diversityVar, list_var, indiv_var, colorVar=boxplotColor_var )
+PlotDiversity(div_mat,diversityVar, listVar = list_var, indivVar = indiv_var, colorVar=boxplotColor_var, labels = "no")
 ```
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}

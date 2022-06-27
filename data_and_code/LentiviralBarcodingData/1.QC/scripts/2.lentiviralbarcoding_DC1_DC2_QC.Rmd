@@ -47,19 +47,39 @@ list_val = metadata$type
 qc_mat<-ReformatQCmatrix(count_matrix, metadata, dup_var, dup_val, sampleNameFieldsep = "_")
 ```
 
-
 ### Duplicates checking 
 
 ##### Prior to drawing biological insights from a lineage tracing experiment, it is important to assess whether there are technical factors that can confound the interpretation of the data. Here we look at the consistency of technical replicates
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
 dup_mat<-MakeDuplicatesMatrix(qc_mat, list_var, list_val, metadata)
-PlotDuplicates(dup_mat, dup_val, transformation = "arcsin")
+PlotDuplicates(matrix = dup_mat, dupVal = dup_val, transformation = "arcsin")
 ```
+
+All duplciates has more than 0.80 correlation threshold. 
 
 ### Repeat Use checking 
 
 ##### Here we assess the frequency of repeat use barcodes in the data
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+
+library(reshape2)
+
+repeat_use<-dcast(qc_mat, Barcodes~mouse, value.var = "total_read", fun.aggregate = sum)
+
+repeat_use$ru<-apply(repeat_use[,-1], 1, function(x) length(which(x>0)))
+# keep only repeated ones across mice
+repeat_use<-repeat_use[which(repeat_use$ru>1),]
+# Number of all repeat use
+nb_ru<-nrow(repeat_use)
+# Les repeat use according almut method are set to zero if < quantile otherwise kept
+nb_bc<-length(unique(qc_mat$Barcodes))
+
+nb_ru/nb_bc
+```
+
+3.4% of repeat used barcodes between individuals.
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
 #parameters
@@ -69,3 +89,11 @@ indiv_val=c("2", "4", "5")
 ru_mat<-MakeRepeatUseMatrix(qc_mat, indiv_var, indiv_val)
 PlotRepeatUse(ru_mat, indiv_var,textSize = 12)
 ```
+
+
+
+
+
+
+
+

@@ -68,8 +68,6 @@ indiv_val=c("2", "4", "5")
 colorFreq="type"
 
 freq_mat<-MakeBarcodeFrequenciesMatrix(count_matrix, metadata, indiv_var, indiv_val, list_var, list_val)
-# To have cDC2 in green :
-freq_mat$type <- factor(freq_mat$type , levels = c("cDC2", "cDC1"))
 PlotBarcodeFrequencies(freq_mat, colorFreq, y = "histogram", nbins = 10)
 ```
 
@@ -81,22 +79,19 @@ list_val = metadata$type
 colorCum="type"
 
 cum_mat<-MakeCumulativeDiagramMatrix(count_matrix, metadata, indiv_var, indiv_val, list_var, list_val, colorCum)
-# To have cDC2 in green :
 PlotCumulativeDiagram(cum_mat,indiv_var, colorFreq)
 ```
-
 
 ### Diversity 
 
 ##### Quantify clonal diversity between cDC1 and cDC2 using the Shannon Index
-
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
 boxplotColor_var=""
 diversityVar<-"Shannon index"
 
 div_mat<-CalculDiversity(count_matrix, metadata, indiv_var, indiv_val, list_var, list_val ,colorVar=boxplotColor_var, diversity=diversityVar)
-PlotDiversity(div_mat,diversityVar, list_var, indiv_var, colorVar=boxplotColor_var, dots = "yes")
+PlotDiversity(div_mat, diversityVar, list_var, indiv_var, colorVar=boxplotColor_var, dots = "no")
 ```
 
 ##### Now lets see if barcode abundances are similar between our cDC1 and cDC2 samples using scatter plot and pie chart visualisations
@@ -123,8 +118,6 @@ pie + guides(fill = guide_legend(title = "Group")) +
           axis.text = element_text(size = 15), 
           legend.position = "none")
 ```     
-
-
 
 ### Categorisation
 
@@ -177,6 +170,23 @@ count_per_cat<-MakeCategoryMatrices(count_matrix, metadata, indiv_var, indiv_val
 PlotCategoryCounts(count_per_cat, slider)
 ```
 
+
+# Bias Analysis 
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+biasType<-MakeBiasPerTypeMatrix(count_matrix, metadata, indiv_var, indiv_val, catVar, catVal)
+PlotBiasPerType(biasType, y = "cDC1")
+```
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+biasType<-MakeBiasPerTypeMatrix(count_matrix, metadata, indiv_var, indiv_val, catVar, catVal)
+PlotBiasPerType(biasType, y = "cDC2")
+```
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+bias<-MakeBiasPerCatMatrix(count_matrix, metadata, indiv_var, indiv_val, catVar, catVal)
+PlotBiasPerCat(bias)
+```
 
 
 

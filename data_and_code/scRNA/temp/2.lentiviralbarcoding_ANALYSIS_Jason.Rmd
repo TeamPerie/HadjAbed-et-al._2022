@@ -1,0 +1,269 @@
+---
+title: "Analysis of lentiviral barcoding data - cDC1 versus cDC2 dendritic cells subtypes"
+author: "Louisa Hadj Abed"
+date: "4/06/202"
+output: html_document
+---
+
+<br/>
+
+
+<br/>
+
+```{r setup, include=TRUE, warning=FALSE, message=FALSE}
+library(ggplot2)
+library(devtools)
+#load packages
+#devtools::install_github("TeamPerie/CellDestiny", quiet = TRUE)
+library(CellDestiny)
+
+cols = c("dark blue","#56B4E9","#0072B2",'#F15854',"#2d543d",
+         "#B276B2","#CB2027",
+         "#617a89","#0b53c1","#60BD68","grey90","#117733")
+
+```
+
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+# set working directory
+setwd('/Users/jasoncosgrove/Dropbox (Team_Perie)/Hadj_Abed_2022/1st_review/data_and_code/scRNA')
+# import files
+count_matrix <- read.csv("merged_matrices.csv")
+metadata <- read.csv("merged_matrices_metadata.csv")
+
+# Common parameters
+indiv_var="mouse"
+indiv_val=c("lk", "lsk")
+list_var = c("type")
+list_val = metadata$type
+```
+
+### Heatmap
+
+##### Heatmap is used to visualize barcode compisition similarities between the cell types
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+## Plot heatmap
+distance<-"euclidean"
+clusteringMeth<-"complete"
+dendro<-"yes"
+barcodes<-"no"
+nclust<-0
+pool=FALSE
+```
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+heat_mat<-MakeHeatmapMatrix(matrix = count_matrix, metadata = metadata, indivVar = indiv_var, indivVal = indiv_val, listVar = list_var,  listVal = list_val, poolIndiv = pool)
+p<-PlotHeatmap(heat_mat, distance = distance, clustering = clusteringMeth, showDendro = dendro, showBarcodes = barcodes, nClusters = nclust, columnTextSize = 1)
+```
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+
+
+heat_mat<-MakeHeatmapMatrix(matrix = count_matrix, metadata = metadata, indivVar = indiv_var, indivVal = indiv_val, listVar = list_var,  listVal = list_val, poolIndiv = TRUE)
+
+
+tiff("/users/jasoncosgrove/Desktop/heatmap.tiff",units="in", width=7, height=4, res=300)
+p<-PlotHeatmap(heat_mat, distance = distance, clustering = clusteringMeth, showDendro = dendro, showBarcodes = barcodes, nClusters = 6, columnTextSize = 1)
+dev.off()
+
+
+```
+
+
+### Clone sizes
+
+##### Plot clone-size distributions using a histogram
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+list_var = c("type")
+list_val = metadata$type
+indiv_val=c("lk", "lsk")
+colorFreq="mouse"
+
+freq_mat<-MakeBarcodeFrequenciesMatrix(count_matrix, metadata, indiv_var, indiv_val, list_var, list_val)
+# To have cDC2 in green :
+PlotBarcodeFrequencies(freq_mat, colorFreq, y = "histogram", nbins = 10)
+
+
+```
+
+##### Plot clone-size distributions using a cumulative frequency diagram
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+list_var = c("type")
+list_val = metadata$type
+colorCum="type"
+
+
+
+cum_mat<-MakeCumulativeDiagramMatrix(count_matrix, metadata, indiv_var, indiv_val, list_var, list_val, colorCum, xProp = "yes")
+p <- PlotCumulativeDiagram(cum_mat,indiv_var, colorVar = colorCum, xProp = "yes")
+
+tiff("/users/jasoncosgrove/Desktop/cum_dist.tiff",units="in", width=8, height=4, res=300)
+p + scale_color_manual(values=cols)
+dev.off()
+```
+
+
+### Diversity 
+
+##### Quantify clonal diversity within each cell types using the Shannon Index
+
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+boxplotColor_var=""
+diversityVar<-"Shannon index"
+
+indiv_var = "mouse"
+indiv_val=c("lk" ,"lsk")
+
+list_val<- metadata$type[1:6]
+
+div_mat<-CalculDiversity(count_matrix, metadata, indiv_var, indiv_val, list_var, list_val ,colorVar=boxplotColor_var, diversity=diversityVar)
+
+library(RColorBrewer)
+mycolors <- colorRampPalette(brewer.pal(8, "Set2"))(15)
+
+
+
+
+
+
+tiff("/users/jasoncosgrove/Desktop/diversity.tiff",units="in", width=5, height=4, res=300)
+p <-PlotDiversity(div_mat,diversityVar, list_var, indiv_var, colorVar=boxplotColor_var,textSize = 15)
+p + scale_fill_manual(values=cols) + geom_point(color="black", size=2, alpha=0.9) + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) 
+
+
+dev.off()
+
+```
+
+##### Now lets see if barcode abundances are similar between for example Neutrophil and Baso samples using scatter plot and pie chart visualisations
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+## changing parameters
+x_var<-c("type")
+x_val<-c("Neutrophil")
+y_var<-c("type")
+y_val<-c("Monocyte")
+color=""
+
+indiv_val <- "lsk"
+dot_mat<-MakeDotPlotMatrix(count_matrix, metadata, indiv_var, indiv_val,x_var, x_val,y_var, y_val, color)
+
+
+
+tiff("/users/jasoncosgrove/Desktop/avsbLSK.tiff",units="in", width=5, height=5, res=300)
+PlotDotplot(dot_mat, indiv_var, color, textSize = 15) 
+dev.off()
+
+pie_mat<-MakePieChartMatrix(dot_mat, indiv_var, color)
+pie<-PlotPieChart(pie_mat, textSize = 5) 
+
+# to have legend on piechart (not bellow like done by PlotPieChart function)
+
+tiff("/users/jasoncosgrove/Desktop/pie.tiff",units="in", width=5, height=5, res=300)
+pie + guides(fill = guide_legend(title = "Group")) +
+    scale_y_continuous(breaks = pie_mat$ypos , labels = pie_mat$Var1)+
+    theme(axis.ticks = element_blank(),
+          axis.title = element_blank(),
+          axis.text = element_text(size = 1), 
+          legend.position = "none") + 
+            scale_fill_manual(values=c(cols[8:9],"grey"))
+
+dev.off()
+```     
+
+
+
+### Categorisation
+
+In this section we use a threshold-based classifer approach to assign a lineage bias to each barcode. Specifically, we set thresholds of 0,10 and 20% and quantify the number of barcodes that are classified as biased.
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+## common parameters
+# Get category variable and values
+catVar<-"type"
+catVal<-metadata$type[1:10]
+```
+
+##### 0% bias  
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+## changing parameters
+
+
+catVal <- catVal[5:6]
+
+slider<-0
+
+mycolors <- c(cols[8:9],"grey")
+
+count_per_type<-MakeCategoryMatrices(count_matrix, metadata, indiv_var, indiv_val, catVar, catVal, slider)[[1]]
+
+
+tiff("/users/jasoncosgrove/Desktop/bias_0.tiff",units="in", width=5, height=5, res=300)
+PlotCategories(count_per_type, slider, legendPos = "right")+ 
+            scale_fill_manual(values=mycolors)+ theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1), legend.text=element_text(size=7), legend.title=element_blank())
+dev.off()
+
+count_per_cat<-MakeCategoryMatrices(count_matrix, metadata, indiv_var, indiv_val, catVar, catVal, slider)[[2]]
+
+PlotCategoryCounts(count_per_cat, slider)+ 
+            scale_fill_manual(values=mycolors)
+dev.off()
+```
+
+
+##### 10% bias  
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+## changing parameters
+slider<-10
+
+
+count_per_type<-MakeCategoryMatrices(count_matrix, metadata, indiv_var, indiv_val, catVar, catVal, slider)[[1]]
+
+tiff("/users/jasoncosgrove/Desktop/bias_10.tiff",units="in", width=5, height=5, res=300)
+PlotCategories(count_per_type, slider, legendPos = "right")+ 
+            scale_fill_manual(values=mycolors)+ theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1), legend.text=element_text(size=7), legend.title=element_blank())
+dev.off()
+
+count_per_cat<-MakeCategoryMatrices(count_matrix, metadata, indiv_var, indiv_val, catVar, catVal, slider)[[2]]
+
+PlotCategoryCounts(count_per_cat, slider)+ 
+            scale_fill_manual(values=mycolors)
+
+```
+
+##### 20% bias  
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+## changing parameters
+slider<-20
+
+count_per_type<-MakeCategoryMatrices(count_matrix, metadata, indiv_var, indiv_val, catVar, catVal, slider)[[1]]
+
+tiff("/users/jasoncosgrove/Desktop/bias_20.tiff",units="in", width=5, height=5, res=300)
+PlotCategories(count_per_type, slider, legendPos = "right")+ 
+            scale_fill_manual(values=mycolors)+ theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1), legend.text=element_text(size=7), legend.title=element_blank())
+dev.off()
+
+count_per_cat<-MakeCategoryMatrices(count_matrix, metadata, indiv_var, indiv_val, catVar, catVal, slider)[[2]]
+
+
+PlotCategoryCounts(count_per_cat, slider)+ 
+            scale_fill_manual(values=mycolors)
+dev.off()
+```
+
+
+
+
+
+
+
+
+
+

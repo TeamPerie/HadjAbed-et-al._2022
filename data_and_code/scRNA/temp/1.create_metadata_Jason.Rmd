@@ -1,0 +1,72 @@
+---
+title: "Create metadata matrix"
+author: "Louisa Hadj Abed"
+date: "04/06/2022"
+output: html-document
+---
+
+This script creates a metadata matrix based on a given count matrix and based on given column names.
+
+
+```{r , echo=TRUE, warning=FALSE}
+devtools::install_github("TeamPerie/CellDestiny", quiet = TRUE)
+library(CellDestiny)
+#library(plyr)
+setwd('/Users/jasoncosgrove/Dropbox (Team_Perie)/Hadj_Abed_2022/1st_review/data_and_code/scRNA')
+```
+
+```{r ,echo=TRUE, warning=FALSE}
+lk<-read.csv("weinreb_barcodes_lk.csv")
+library(stringi)
+library(stringr)
+colnames(lk)<-str_replace(colnames(lk), "_", "")
+lk[,1]<-paste(lk[,1], "_lk")
+rownames(lk)<-lk[,1]
+lk<-lk[,-1]
+colnames(lk)<-paste0(colnames(lk), "_lk")
+
+lsk<-read.csv("weinreb_barcodes_lsk.csv")
+colnames(lsk)<-str_replace(colnames(lsk), "_", "")
+lsk[,1]<-paste0(lsk[,1], "_lsk")
+rownames(lsk)<-lsk[,1]
+lsk<-lsk[,-1]
+colnames(lsk)<-paste0(colnames(lsk), "_lsk")
+
+lk_lsk<-merge(lk, lsk, by="row.names", all=T)
+lk_lsk[is.na(lk_lsk)]<-0
+rownames(lk_lsk)<-lk_lsk[,1]
+lk_lsk<-lk_lsk[,-1]
+write.csv(file = "./merged_matrices.csv", x = lk_lsk, sep = ",")
+```
+
+```{r ,echo=TRUE, warning=FALSE}
+# parameters
+file_path<-"merged_matrices.csv"
+field_separator=","   # if csv==,   if csv2==;   if tsv==\t
+file_extention<-".csv"
+sampleName_separators="_"
+```
+
+# create metadata of the given count matrix WITHOUT column names 
+
+```{r ,echo=TRUE, warning=FALSE}
+matrix<-read.csv(file_path, sep = field_separator)
+# demander sample name separators
+met<-MakeMetadata(matrix, sampleName_separators)
+met
+```
+
+# name columns after seeing the table
+
+```{r ,echo=TRUE, warning=FALSE}
+# if not duplicats == analysis in the app
+colnames(met)<-c("type", "mouse")
+met
+```
+
+# save the metadata
+```{r ,echo=TRUE, warning=FALSE}
+file_noExtention<-gsub(pattern = file_extention, replacement = "", file_path) # change ".csv" if not .csv file
+write.csv(met, paste0(file_noExtention, "_metadata.csv"), row.names = FALSE, na = "", quote = FALSE)
+```
+

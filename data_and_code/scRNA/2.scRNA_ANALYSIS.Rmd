@@ -1,6 +1,6 @@
 ---
-title: "Analysis of lentiviral barcoding data - cDC1 versus cDC2 dendritic cells subtypes"
-author: "Louisa Hadj Abed"
+title: "Analysis of Weinreb et al (2020)"
+author: "Jason Cosgrove and Louisa Hadj Abed"
 date: "4/06/202"
 output: html_document
 ---
@@ -14,16 +14,139 @@ output: html_document
 library(ggplot2)
 library(devtools)
 library(RColorBrewer)
-
+library(Seurat)
+library(Matrix)
+library(stringi)
+library(stringr)
 #load packages
-devtools::install_github("TeamPerie/CellDestiny", quiet = TRUE)
+#devtools::install_github("TeamPerie/CellDestiny", quiet = TRUE)
 library(CellDestiny)
+
+# set working directory
+setwd(getwd())
+
+cols = c("dark blue","#56B4E9","#0072B2",'#F15854',"#2d543d",
+         "#B276B2","#CB2027",
+         "#617a89","#0b53c1","#60BD68","grey90","#117733")
+
 ```
 
 
+
+### Generate the count matrices and metadata
+
+##### convert dataset into a seurat object
+```{make_seurat_obj, echo=TRUE, warning=FALSE, message=FALSE}
+
+
+#load in the count matrix and metadata for the weinreb et al dataset.
+#these files were downloaded from https://github.com/AllonKleinLab/paper-data/tree/master/Lineage_tracing_on_transcriptional_landscapes_links_state_to_fate_during_differentiation
+
+matrix <- readMM("stateFate_inVitro_normed_counts.mtx")
+gene.names <- read.table("stateFate_inVitro_gene_names.txt",header = F)
+meta.data <- read.table("stateFate_inVitro_metadata.txt",header = T)
+clones <- readMM("stateFate_inVitro_clone_matrix.mtx")
+
+#create a unique id for each celltype and update the dimnames of the matrix
+meta.data$cell_id <- paste(meta.data$Cell_barcode,meta.data$Library,sep = "_")
+dimnames(matrix) <- list(meta.data$cell_id,gene.names$V1)
+rownames(meta.data) <- meta.data$cell_id
+
+#update the barcode information
+meta.data$clone_id <- NA
+
+for(i in 1:ncol(clones)){
+  
+  #subset the metadata to get only the cells that belong to this clone
+  meta.data.subset <- meta.data[meta.data$cell_id %in% names(clones[,i][clones[,i] == 1]),]
+  #for each cell update the clonal information
+  meta.data[meta.data$cell_id %in% names(clones[,i][clones[,i] == 1]),"clone_id"] <- i
+
+}
+
+
+#now create a seurat object
+sobj <- CreateSeuratObject(counts = t(matrix), project = "weinreb", min.cells = 100, min.features = 100,meta.data = meta.data)
+```
+
+
+
+##### make the count matrix
+```{make_count_matrix, echo=TRUE, warning=FALSE, message=FALSE}
+lsk <- subset(sobj,Starting_population == "Lin-Kit+Sca1+")
+lk <- subset(sobj,Starting_population == "Lin-Kit+Sca1-")
+
+df.lsk <- table(lsk@meta.data$clone_id,
+lsk@meta.data$Cell_type_annotation)
+
+df.lk <- table(lk@meta.data$clone_id,
+                lk@meta.data$Cell_type_annotation)
+
+
+write.csv(df.lsk,"weinreb_barcodes_lsk.csv")
+write.csv(df.lk,"weinreb_barcodes_lk.csv")
+
+
+```
+
+##### merge celltypes
+```{r ,echo=TRUE, warning=FALSE}
+lk<-read.csv("weinreb_barcodes_lk.csv")
+
+colnames(lk)<-str_replace(colnames(lk), "_", "")
+lk[,1]<-paste(lk[,1], "_lk")
+rownames(lk)<-lk[,1]
+lk<-lk[,-1]
+colnames(lk)<-paste0(colnames(lk), "_lk")
+
+lsk<-read.csv("weinreb_barcodes_lsk.csv")
+colnames(lsk)<-str_replace(colnames(lsk), "_", "")
+lsk[,1]<-paste0(lsk[,1], "_lsk")
+rownames(lsk)<-lsk[,1]
+lsk<-lsk[,-1]
+colnames(lsk)<-paste0(colnames(lsk), "_lsk")
+
+lk_lsk<-merge(lk, lsk, by="row.names", all=T)
+lk_lsk[is.na(lk_lsk)]<-0
+rownames(lk_lsk)<-lk_lsk[,1]
+lk_lsk<-lk_lsk[,-1]
+write.csv(file = "./merged_matrices.csv", x = lk_lsk, sep = ",")
+```
+
+```{r ,echo=TRUE, warning=FALSE}
+# parameters
+file_path<-"merged_matrices.csv"
+field_separator=","   # if csv==,   if csv2==;   if tsv==\t
+file_extention<-".csv"
+sampleName_separators="_"
+```
+
+# create metadata of the given count matrix WITHOUT column names 
+```{r ,echo=TRUE, warning=FALSE}
+matrix<-read.csv(file_path, sep = field_separator)
+# demander sample name separators
+met<-MakeMetadata(matrix, sampleName_separators)
+met
+```
+
+# name columns after seeing the table
+
+```{r ,echo=TRUE, warning=FALSE}
+# if not duplicats == analysis in the app
+colnames(met)<-c("type", "mouse")
+met
+```
+
+# save the metadata
+```{r ,echo=TRUE, warning=FALSE}
+file_noExtention<-gsub(pattern = file_extention, replacement = "", file_path) # change ".csv" if not .csv file
+write.csv(met, paste0(file_noExtention, "_metadata.csv"), row.names = FALSE, na = "", quote = FALSE)
+```
+
+### Barcode Analysis
+
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
-# set working directory
-setwd(getwd())
+
 # import files
 count_matrix <- read.csv("merged_matrices.csv")
 metadata <- read.csv("merged_matrices_metadata.csv")
@@ -55,9 +178,11 @@ p<-PlotHeatmap(heat_mat, distance = distance, clustering = clusteringMeth, showD
 ```
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
-list_val<-c("Baso", "Eos")
+list_val<-c("Neutrophil", "Monocyte")
 heat_mat<-MakeHeatmapMatrix(matrix = count_matrix, metadata = metadata, indivVar = indiv_var, indivVal = indiv_val, listVar = list_var,  listVal = list_val, poolIndiv = TRUE)
 p<-PlotHeatmap(heat_mat, distance = distance, clustering = clusteringMeth, showDendro = dendro, showBarcodes = barcodes, columnTextSize = 1)
+
+
 ```
 
 
@@ -72,7 +197,10 @@ indiv_val=c("lk", "lsk")
 colorFreq="mouse"
 
 freq_mat<-MakeBarcodeFrequenciesMatrix(count_matrix, metadata, indiv_var, indiv_val, list_var, list_val)
-PlotBarcodeFrequencies(freq_mat, colorFreq, y = "histogram", nbins = 10)
+p <- PlotBarcodeFrequencies(freq_mat, colorFreq, y = "histogram", nbins = 10)
+
+p + scale_fill_manual(values=cols)
+
 ```
 
 ##### Plot clone-size distributions using a cumulative frequency diagram
@@ -83,7 +211,11 @@ list_val = metadata$type
 colorCum="type"
 
 cum_mat<-MakeCumulativeDiagramMatrix(count_matrix, metadata, indiv_var, indiv_val, list_var, list_val, colorCum, xProp = "yes")
-PlotCumulativeDiagram(cum_mat,indiv_var, colorVar = colorCum, xProp = "yes")
+
+p <- PlotCumulativeDiagram(cum_mat,indiv_var, colorVar = colorCum, xProp = "yes")
+
+p + scale_fill_manual(values=cols)
+
 ```
 
 ### Diversity 
@@ -95,7 +227,10 @@ boxplotColor_var=""
 diversityVar<-"Shannon index"
 
 div_mat<-CalculDiversity(count_matrix, metadata, indiv_var, indiv_val, list_var, list_val ,colorVar=boxplotColor_var, diversity=diversityVar)
-PlotDiversity(div_mat,diversityVar, list_var, indiv_var, colorVar=boxplotColor_var)
+p <- PlotDiversity(div_mat,diversityVar, list_var, indiv_var, colorVar=boxplotColor_var) 
+
+
+p + scale_color_manual(values=cols)
 ```
 
 
@@ -116,7 +251,15 @@ dot_mat<-MakeDotPlotMatrix(count_matrix, metadata, indiv_var, indiv_val,x_var, x
 PlotDotplot(dot_mat, indiv_var, color, textSize = 15) 
 
 pie_mat<-MakePieChartMatrix(dot_mat, indiv_var, color)
-pie<-PlotPieChart(pie_mat, textSize = 5) 
+pie <- PlotPieChart(pie_mat, textSize = 5) 
+
+pie + guides(fill = guide_legend(title = "Group")) +
+    scale_y_continuous(breaks = pie_mat$ypos , labels = pie_mat$Var1)+
+    theme(axis.ticks = element_blank(),
+          axis.title = element_blank(),
+          axis.text = element_text(size = 1), 
+          legend.position = "none") + 
+            scale_fill_manual(values=c(cols[8:9],"grey"))
 ```     
 
 ### Categorisation
@@ -127,7 +270,10 @@ In this section we use a threshold-based classifer approach to assign a lineage 
 ## common parameters
 # Get category variable and values
 catVar<-"type"
-catVal<-metadata$type[1:10]
+catVal<- c("Monocyte","Neutrophil")
+
+mycolors <- c(cols[8:9],"grey")
+
 ```
 
 ##### 0% bias  
@@ -136,14 +282,15 @@ catVal<-metadata$type[1:10]
 ## changing parameters
 slider<-0
 
-catVal <- catVal[5:6]
+
+
 
 count_per_type<-MakeCategoryMatrices(count_matrix, metadata, indiv_var, indiv_val, catVar, catVal, slider)[[1]]
-PlotCategories(count_per_type, slider, legendPos = "right")
+PlotCategories(count_per_type, slider, legendPos = "right") + scale_fill_manual(values=mycolors)
 
 
 count_per_cat<-MakeCategoryMatrices(count_matrix, metadata, indiv_var, indiv_val, catVar, catVal, slider)[[2]]
-PlotCategoryCounts(count_per_cat, slider)
+PlotCategoryCounts(count_per_cat, slider) + scale_fill_manual(values=mycolors)
 ```
 
 
@@ -155,10 +302,10 @@ slider<-10
 
 
 count_per_type<-MakeCategoryMatrices(count_matrix, metadata, indiv_var, indiv_val, catVar, catVal, slider)[[1]]
-PlotCategories(count_per_type, slider, legendPos = "bottom") 
+PlotCategories(count_per_type, slider, legendPos = "bottom")  + scale_fill_manual(values=mycolors)
 
 count_per_cat<-MakeCategoryMatrices(count_matrix, metadata, indiv_var, indiv_val, catVar, catVal, slider)[[2]]
-PlotCategoryCounts(count_per_cat, slider)
+PlotCategoryCounts(count_per_cat, slider) + scale_fill_manual(values=mycolors)
 ```
 
 ##### 20% bias  
@@ -168,10 +315,16 @@ PlotCategoryCounts(count_per_cat, slider)
 slider<-20
 
 count_per_type<-MakeCategoryMatrices(count_matrix, metadata, indiv_var, indiv_val, catVar, catVal, slider)[[1]]
-PlotCategories(count_per_type, slider, legendPos = "bottom")
+p <- PlotCategories(count_per_type, slider, legendPos = "bottom")
+
+
+p + scale_fill_manual(values=mycolors) 
 
 count_per_cat<-MakeCategoryMatrices(count_matrix, metadata, indiv_var, indiv_val, catVar, catVal, slider)[[2]]
-PlotCategoryCounts(count_per_cat, slider)
+p <- PlotCategoryCounts(count_per_cat, slider)
+
+p + scale_fill_manual(values=mycolors) 
+
 ```
 
 
